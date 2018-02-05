@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Kuizza haha plus</title>
+        <link rel="stylesheet" href="css/core.css">
+        <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet"> 
+        <link href="https://fonts.googleapis.com/css?family=Dhurjati" rel="stylesheet">
+
+        <style media="screen">
+        body{
+          background-image: url("bg.jpg");
+          background-repeat: no-repeat;
+          background-size: 100% 700px;
+         
+        }
+        img{
+          width: 500px;
+          height: 200px;
+
+        }
+        .homepage{
+          text-align: center;
+          margin: 10%
+        }
+        .gameBlock{
+          text-align: center;    }
+        .animate{
+          transition: all 0.1s;
+          -webkit-transition: all 0.1s;
+          }
+
+        button{
+          padding: 10px 40px;
+          margin: 0px 10px 10px 0px;
+          
+          border-radius: 10px;
+          font-family: 'Pacifico', cursive;
+          font-size: 25px;
+          color: #FFF;
+          text-decoration: none;  
+          
+        }
+        .Choice{
+          color: black;
+          background-color: #3498DB;
+          border-bottom: 5px solid #2980B9;
+          text-shadow: 0px -2px #2980B9;
+        }
+        .restart{
+          color: white;
+          background-color: #E74C3C;
+          border-bottom: 5px solid #2980B9;
+          text-shadow: 0px -2px #2980B9;
+        }
+        .tenChoice{
+          background-color: #3498DB;
+          border-bottom: 5px solid #2980B9;
+          text-shadow: 0px -2px #2980B9;
+        }
+        .twentyChoice{
+          background-color: #82BF56;
+          border-bottom: 5px solid #669644;
+          text-shadow: 0px -2px #669644;
+        }
+
+        button:active{
+          transform: translate(0px,5px);
+          -webkit-transform: translate(0px,5px);
+          border-bottom: 1px solid;
+        }
+        .question{
+          font-family: 'Pacifico', cursive;
+          font-size: 40px;
+          color: white;
+          margin: 40px;
+        }
+        .gameName, .finalpage{
+          font-family: 'Dhurjati', sans-serif;
+          font-size: 80px;
+          color: white;
+          margin: 40px;
+        }
+        </style>
+    </head>
+
+    <body>
+      <div class="homepage">
+        <div class="gameName">Kuiz zaaa HaHa Plus</div>
+        <div class="gameChoiceNum">
+          <button class="tenChoice" onclick="showGame(10)">10 Choices</button>
+          <button class="twentyChoice" onclick="showGame(20)">20 Choices</button>
+         
+        </div>
+      </div>
+
+      <div class="gameBlock" style="margin-top: 30px">
+        <div class="time" style="float: left; color: white; font-size: 20px;"></div>
+         <div class="picQuiz"><img id="pic" src="" style="align-items: center;"></div>
+         <div class="question">
+            <p >Question...</p>
+         </div>
+
+        <div class="Choices">
+           <button class="Choice" id="choiceA">a</button>
+           <button class="Choice" id="choiceB">b</button>
+           <button class="Choice" id="choiceC">c</button>
+           <button class="Choice" id="choiceD">d</button>
+        </div>
+       
+      </div>
+      <center> 
+        <div class="finalpage">
+        <p id="text">text..</p>
+        <p id="score">score...</p>
+        <!-- <button class="restart" onclick="start()">Try Again Bro..</button> -->
+      </div></center>
+     
+    
+
+        <script src="jquery-3.3.1.min.js" type="text/javascript">
+
+        </script>
+
+        <script type="text/javascript">
+        var listSection = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];
+        var choiceNum;
+        var ans;
+        var score = 0;
+        var time = 10;
+        start();
+
+        function getQuiz(num){
+          $(document).ready(function(){
+              $.ajax({
+                  url: 'data.json',
+                  method: 'GET',
+                  dataType: 'json',
+                  success: function(response){
+                          $(".question").html(response[num].question);
+                          $("#choiceA").html(response[num].a);
+                          $("#choiceB").html(response[num].b);
+                          $("#choiceC").html(response[num].c);
+                          $("#choiceD").html(response[num].d);
+                          $("#pic").attr('src', response[num].img);
+                          ans = response[num].ans;
+
+                          
+                  }
+              });
+          });
+        }
+        $(".time").html(10);
+        function start(){
+           $(".gameBlock").hide();
+            $(".finalpage").hide();
+            $(".homepage").show();
+           
+
+           
+        }
+        function showGame(num){
+            choiceNum = num;
+            countdown();
+            showQuiz();
+
+         
+        }
+        function countdown(){
+          time--;
+          setTimeout(countdown, 1000);
+          $(".time").html(time);
+          if(time <= 0){
+            showQuiz();
+            time = 10;
+          }
+        }
+        
+        function showQuiz(){
+
+         console.log("started..");
+          if(choiceNum > 0){
+            $(".homepage").hide();
+            $(".gameBlock").show();
+            getQuiz(randomSection());
+            choiceNum--;
+          }
+          else{
+            $(".gameBlock").hide();
+            $(".finalpage").show();
+            if(score > 7){
+              $("#text").html("Great bro");
+            }else{ $("#text").html("Noooob");}
+            $("#score").html("Your Score : " + score);
+
+          }
+         
+          
+        }
+        $('.Choice').click(function(){
+          if (ans == $(this).html()){
+              score++;
+              console.log(score);
+            }
+          showQuiz();
+          time = 10;
+        })
+        function randomSection(){
+          let randNum;
+          let currentSection;
+          randNum = Math.floor(Math.random() * (listSection.length-1));
+          currentSection = listSection[randNum];
+          console.log("rd = " + randNum);
+          console.log("section = " + currentSection);
+          listSection.splice(randNum,1);
+
+          return currentSection;
+        }
+        </script>
+    </body>
+</html>
